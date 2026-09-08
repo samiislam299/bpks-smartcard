@@ -1,0 +1,97 @@
+<!doctype html>
+<html lang="bn">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>BPKS Smart Seba Card</title>
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header>
+  <div class="nav">
+    <img src="assets/bpks-logo.jpg" class="logo">
+    <div><b>BPKS</b><small>BANDHON PROBASHI KOLLYAN SONGSTHA</small></div>
+  </div>
+</header>
+
+<main>
+<section class="intro">
+  <span>সেবা • ঐক্য • মানবতা • উন্নয়ন</span>
+  <h1>BPKS Smart Seba Card</h1>
+  <p>এখানে আপনার নিজের সদস্যের তথ্য দিয়ে Smart Card তৈরি করুন।</p>
+</section>
+
+<section class="form-card">
+<h2>Member Information</h2>
+<div class="grid">
+<label>নাম (বাংলা)<input id="nameBn" placeholder="যেমন: জাহানারা বেগম"></label>
+<label>Name (English)<input id="nameEn" placeholder="যেমন: Jahanara Begum"></label>
+<label>পিতার নাম<input id="father" placeholder="পিতার নাম"></label>
+<label>মাতার নাম<input id="mother" placeholder="মাতার নাম"></label>
+<label>জন্ম তারিখ<input id="dob" type="date"></label>
+<label>Joining Date<input id="joining" type="date"></label>
+<label>Village<input id="village"></label>
+<label>Post Office<input id="post"></label>
+<label>Thana/Upazila<input id="thana"></label>
+<label>District<input id="district"></label>
+<label>Mobile<input id="mobile"></label>
+<label>Blood Group<select id="blood"><option value="">Select</option><option>A+</option><option>A-</option><option>B+</option><option>B-</option><option>AB+</option><option>AB-</option><option>O+</option><option>O-</option></select></label>
+<label class="full">Member Photo<input id="photo" type="file" accept="image/*"></label>
+</div>
+<div class="buttons">
+<button onclick="saveMember()">💾 Save Member</button>
+<button class="secondary" onclick="clearMember()">Clear</button>
+<button class="secondary" onclick="window.print()">🖨 Print</button>
+</div>
+<p class="note">এই preview version-এ তথ্য আপনার browser-এর local storage-এ save হবে। GitHub Pages-এ PHP/MySQL database নেই।</p>
+</section>
+
+<section id="card" class="smart-card">
+<div class="card-head">
+<img src="assets/bpks-logo.jpg">
+<div><div class="bpks">BPKS</div><div>BANDHON PROBASHI KOLLYAN SONGSTHA</div></div>
+</div>
+<div class="title">BPKS SMART SEBA CARD</div>
+<div class="card-content">
+<div class="photo-box"><img id="cardPhoto" src="assets/bpks-logo.jpg"></div>
+<div class="details">
+<h2 id="cardName">Your Name</h2>
+<p id="cardNameBn">আপনার নাম</p>
+<p><b>Father:</b> <span id="cardFather">—</span></p>
+<p><b>Mother:</b> <span id="cardMother">—</span></p>
+<p><b>Member ID:</b> <span id="cardId">BPKS-00001</span></p>
+<p><b>Blood:</b> <span id="cardBlood">—</span></p>
+<p><b>Joining:</b> <span id="cardJoining">—</span></p>
+</div>
+</div>
+<div class="card-foot">সেবা • ঐক্য • মানবতা • উন্নয়ন</div>
+</section>
+</main>
+
+<script>
+const fields=["nameBn","nameEn","father","mother","dob","joining","village","post","thana","district","mobile","blood"];
+let saved=JSON.parse(localStorage.getItem("bpksMember")||"null");
+function fill(m){
+  if(!m)return;
+  fields.forEach(id=>{let e=document.getElementById(id); if(e)e.value=m[id]||"";});
+  document.getElementById("cardName").textContent=m.nameEn||"Your Name";
+  document.getElementById("cardNameBn").textContent=m.nameBn||"আপনার নাম";
+  document.getElementById("cardFather").textContent=m.father||"—";
+  document.getElementById("cardMother").textContent=m.mother||"—";
+  document.getElementById("cardBlood").textContent=m.blood||"—";
+  document.getElementById("cardJoining").textContent=m.joining||"—";
+  document.getElementById("cardId").textContent=m.memberId||"BPKS-00001";
+  if(m.photo) document.getElementById("cardPhoto").src=m.photo;
+}
+function saveMember(){
+  let m={}; fields.forEach(id=>m[id]=document.getElementById(id).value);
+  m.memberId=saved?.memberId||("BPKS-"+String(Date.now()).slice(-5));
+  let f=document.getElementById("photo").files[0];
+  if(f){let r=new FileReader(); r.onload=()=>{m.photo=r.result;localStorage.setItem("bpksMember",JSON.stringify(m));saved=m;fill(m);alert("Member saved successfully!");};r.readAsDataURL(f);}
+  else {m.photo=saved?.photo||"";localStorage.setItem("bpksMember",JSON.stringify(m));saved=m;fill(m);alert("Member saved successfully!");}
+}
+function clearMember(){localStorage.removeItem("bpksMember");location.reload();}
+fill(saved);
+</script>
+</body>
+</html>
